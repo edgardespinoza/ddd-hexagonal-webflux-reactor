@@ -75,30 +75,84 @@ curl -i -X POST http://localhost:8080/api/users   -H "Content-Type: application/
 
 ## 📁 Project Structure
 
-```
-.
-├── docker-compose.yaml
-├── pom.xml
-├── README.md
-└── src/
-    ├── main/java/com/example/demo/
-    │   ├── DemoApplication.java
-    │   ├── application/
-    │   │   ├── service/
-    │   │   │   ├── CreateUserService.java
-    │   │   │   └── FindUserService.java
-    │   │   └── events/
-    │   │       └── DomainEventListener.java
-    │   ├── domain/
-    │   │   ├── model/
-    │   │   │   └── UserDomain.java
-    │   │   └── event/
-    │   │       └── UserEvent.java
-    │   └── infrastructure/
-    │       ├── adapter/input/rest/ControllerUser.java
-    │       └── adapter/output/persistence/PostgresUserAdapter.java
-    └── resources/
-        └── application.properties
+```bash
+📦 demo-project
+├── 📁 src
+│   ├── 📁 main
+│   │   ├── 📁 java
+│   │   │   └── 📁 com/example/demo
+│   │   │       ├── 📁 application                     # 💡 Application layer (use cases & domain events)
+│   │   │       │   ├── 📁 events                      # 🔔 Domain event listeners
+│   │   │       │   │   └── 💻 DomainEventListener.java
+│   │   │       │   └── 📁 service                     # ⚙️ Use case implementations
+│   │   │       │       ├── 💻 CreateUserService.java
+│   │   │       │       └── 💻 FindUserService.java
+│   │   │       ├── 📁 domain                          # 🧱 Domain layer (entities, value objects, events, ports)
+│   │   │       │   ├── 📁 event                       # 📢 Domain events
+│   │   │       │   │   └── 💻 UserEvent.java
+│   │   │       │   ├── 📁 model                       # 🧩 Aggregates and mappers
+│   │   │       │   │   ├── 📁 mapper
+│   │   │       │   │   │   └── 💻 UserEventMapper.java
+│   │   │       │   │   ├── 📁 vo                      # 🔠 Value Objects (immutable domain values)
+│   │   │       │   │   │   ├── 📁 setting
+│   │   │       │   │   │   │   ├── 💻 SettingCode.java
+│   │   │       │   │   │   │   ├── 💻 SettingDescription.java
+│   │   │       │   │   │   │   └── 💻 SettingId.java
+│   │   │       │   │   │   └── 📁 user
+│   │   │       │   │   │       ├── 💻 UserEmail.java
+│   │   │       │   │   │       ├── 💻 UserId.java
+│   │   │       │   │   │       └── 💻 UserName.java
+│   │   │       │   │   ├── 💻 SettingDomain.java      # 🧱 Domain aggregate root for settings
+│   │   │       │   │   └── 💻 UserDomain.java         # 🧱 Domain aggregate root for users
+│   │   │       │   └── 📁 port                        # 🔌 Hexagonal ports (interfaces)
+│   │   │       │       ├── 📁 in                      # 🎯 Input ports (use cases)
+│   │   │       │       │   ├── 💻 CreateUserUseCase.java
+│   │   │       │       │   └── 💻 FindUserUseCase.java
+│   │   │       │       └── 📁 out                     # 🧩 Output ports (repositories, external systems)
+│   │   │       │           ├── 💻 SettingsRepository.java
+│   │   │       │           └── 💻 UserRepository.java
+│   │   │       ├── 📁 infrastructure                  # 🏗️ Infrastructure layer (adapters & I/O)
+│   │   │       │   └── 📁 adapter
+│   │   │       │       ├── 📁 input                   # 🌐 Input adapters (REST controllers)
+│   │   │       │       │   └── 📁 rest
+│   │   │       │       │       ├── 📁 dto             # 📦 Data Transfer Objects (request/response)
+│   │   │       │       │       │   ├── 💻 UserCreateDto.java
+│   │   │       │       │       │   └── 💻 UserResponseDto.java
+│   │   │       │       │       ├── 📁 exception       # 🚨 Exception handling
+│   │   │       │       │       │   ├── 💻 ErrorResponse.java
+│   │   │       │       │       │   └── 💻 GlobalExceptionHandler.java
+│   │   │       │       │       ├── 📁 mapper          # 🔁 DTO <-> Domain mappers
+│   │   │       │       │       │   └── 💻 UserDtoMapping.java
+│   │   │       │       │       └── 🌐 ControllerUser.java   # 🧭 Reactive REST controller
+│   │   │       │       └── 📁 output                  # 💾 Output adapters (persistence)
+│   │   │       │           └── 📁 persistence
+│   │   │       │               ├── 📁 entity          # 🧱 Database entities
+│   │   │       │               │   ├── 💻 SettingEntity.java
+│   │   │       │               │   └── 💻 UserEntity.java
+│   │   │       │               ├── 📁 mapper          # 🔁 Entity <-> Domain mappers
+│   │   │       │               │   └── 💻 UserEntityMapper.java
+│   │   │       │               ├── 📁 repository      # 🗃️ Reactive repositories (R2DBC)
+│   │   │       │               │   ├── 💻 PostgresSettingRepository.java
+│   │   │       │               │   └── 💻 PostgresUserRepository.java
+│   │   │       │               ├── 🐘 PostgresSettingsAdapter.java  # Adapter for settings persistence
+│   │   │       │               └── 🐘 PostgresUserAdapter.java      # Adapter for users persistence
+│   │   │       └── 🚀 DemoApplication.java             # 🏁 Main entry point
+│   │   └── 📁 resources
+│   │       └── ⚙️ application.properties              # ⚙️ App configuration
+│   └── 📁 test
+│       └── 📁 java/com/example/demo
+│           └── 🧪 DemoApplicationTests.java            # ✅ Unit tests
+├── ⚙️ .gitattributes
+├── ⚙️ .gitignore
+├── 📘 README.md
+├── 🐳 docker-compose.yaml                             # 🐘 PostgreSQL container config
+├── 🧾 ingres.sql                                      # 📄 Database init script
+├── 🔧 mvnw                                            
+├── 🔧 mvnw.cmd                                        
+├── 🧱 pom.xml                                        
+├── 🐍 run-json.py                                     # 🧮 JSON utility script
+└── 🐍 run-ndjson.py                                   # 🧮 NDJSON utility script
+
 ```
 
 ---
